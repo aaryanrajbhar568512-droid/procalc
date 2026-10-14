@@ -1,5 +1,5 @@
-const CACHE_NAME = 'procalc-v1';
-const ASSETS = ['./', './index.html', './manifest.json', './icon.png'];
+const CACHE_NAME = 'procalc-v2';
+const ASSETS = ['./', './index.html', './manifest.json', './calculator_app_icon_512.png'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
