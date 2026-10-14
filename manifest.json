@@ -1,18 +1,26 @@
 {
+  "id": "/procalc/",
   "name": "ProCalc Studio",
   "short_name": "ProCalc",
+  "description": "Smart and fast standard calculator with memory functions.",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "calculator_app_icon_512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "calculator_app_icon_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
-
