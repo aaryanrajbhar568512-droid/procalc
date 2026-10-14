@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ProCalc Studio</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; user-select: none; }
+    body { background: #0f172a; color: #f8fafc; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 12px; }
+    .calc { width: 100%; max-width: 380px; background: #1e293b; border-radius: 24px; padding: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px; color: #94a3b8; font-weight: 600; }
+    .display { background: #0f172a; border-radius: 16px; padding: 18px; text-align: right; margin-bottom: 16px; min-height: 105px; display: flex; flex-direction: column; justify-content: flex-end; word-break: break-all; }
+    .expr { font-size: 16px; color: #64748b; min-height: 22px; margin-bottom: 6px; }
+    .val { font-size: 38px; font-weight: 700; color: #f8fafc; }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    button { border: none; border-radius: 14px; padding: 18px 0; font-size: 20px; font-weight: 600; cursor: pointer; background: #334155; color: #f8fafc; transition: transform 0.08s, background 0.15s; }
+    button:active { transform: scale(0.94); }
+    .op { background: #3b82f6; color: #fff; }
+    .fn { background: #475569; color: #cbd5e1; font-size: 17px; }
+    .eq { background: #10b981; color: #fff; }
+    .clr { background: #ef4444; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="calc">
+    <div class="header">
+      <span>ProCalc Studio</span>
+      <span id="mem-ind"></span>
+    </div>
+    <div class="display">
+      <div class="expr" id="expr"></div>
+      <div class="val" id="val">0</div>
+    </div>
+    <div class="grid">
+      <button class="fn" onclick="mem('MC')">MC</button>
+      <button class="fn" onclick="mem('MR')">MR</button>
+      <button class="fn" onclick="mem('M+')">M+</button>
+      <button class="fn" onclick="mem('M-')">M-</button>
+
+      <button class="clr" onclick="clr()">AC</button>
+      <button class="fn" onclick="back()">⌫</button>
+      <button class="fn" onclick="pct()">%</button>
+      <button class="op" onclick="op('/')">÷</button>
+
+      <button onclick="num('7')">7</button>
+      <button onclick="num('8')">8</button>
+      <button onclick="num('9')">9</button>
+      <button class="op" onclick="op('*')">×</button>
+
+      <button onclick="num('4')">4</button>
+      <button onclick="num('5')">5</button>
+      <button onclick="num('6')">6</button>
+      <button class="op" onclick="op('-')">−</button>
+
+      <button onclick="num('1')">1</button>
+      <button onclick="num('2')">2</button>
+      <button onclick="num('3')">3</button>
+      <button class="op" onclick="op('+')">+</button>
+
+      <button onclick="sign()">±</button>
+      <button onclick="num('0')">0</button>
+      <button onclick="num('.')">.</button>
+      <button class="eq" onclick="calc()">=</button>
+    </div>
+  </div>
+  <script>
+    let cur = '0', prev = '', oper = null, reset = false, memory = 0;
+    const valEl = document.getElementById('val'), exprEl = document.getElementById('expr'), memEl = document.getElementById('mem-ind');
+    function upd() { valEl.textContent = cur; exprEl.textContent = oper ? `${prev} ${oper}` : ''; memEl.textContent = memory !== 0 ? `M: ${memory}` : ''; }
+    function num(n) { if (reset) { cur = '0'; reset = false; } if (n === '.' && cur.includes('.')) return; cur = cur === '0' && n !== '.' ? n : cur + n; upd(); }
+    function op(o) { if (oper && !reset) calc(); prev = cur; oper = o; reset = true; upd(); }
+    function calc() { if (!oper) return; const a = parseFloat(prev), b = parseFloat(cur); let res = 0; if (oper === '+') res = a + b; if (oper === '-') res = a - b; if (oper === '*') res = a * b; if (oper === '/') res = b === 0 ? 'Error' : a / b; cur = res === 'Error' ? 'Error' : String(Math.round(res * 1e10) / 1e10); oper = null; reset = true; upd(); }
+    function clr() { cur = '0'; prev = ''; oper = null; reset = false; upd(); }
+    function back() { if (reset || cur === 'Error') { cur = '0'; reset = false; } else { cur = cur.length > 1 ? cur.slice(0, -1) : '0'; } upd(); }
+    function pct() { cur = String(parseFloat(cur) / 100); upd(); }
+    function sign() { if (cur !== '0') cur = cur.startsWith('-') ? cur.slice(1) : '-' + cur; upd(); }
+    function mem(m) { const v = parseFloat(cur) || 0; if (m === 'MC') memory = 0; if (m === 'MR') { cur = String(memory); reset = true; } if (m === 'M+') memory += v; if (m === 'M-') memory -= v; upd(); }
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('./sw.js'); }
+  </script>
+</body>
+</html>
